@@ -47,6 +47,7 @@ $$
 We compute its Laplace transform using SageMath:
 ```python
 var('t s c')
+assume(c > 0)  # Assuming c is positive
 f = heaviside(t-c)
 L = laplace(f, t, s)
 print(L)
@@ -78,13 +79,50 @@ Laplace transforms can be used to solve linear differential equations with initi
 ### Example 5: Solving a Second-Order Differential Equation
 Solve $y'' - 3y' - 4y = \sin(x)$ with initial conditions $y(0) = 1, y'(0) = -1$:
 ```python
+def L(y,x):
+    return diff(y, x, x) - 3*diff(y, x) - 4*y 
+```
+
+```python
 var('x s')
 y = function('y')(x)
-deq = diff(y, x, x) - 3*diff(y, x) - 4*y == sin(x)
+deq = L(y, x) == sin(x)
 L_deq = laplace(deq, x, s)
 print(L_deq)
 ```
 This results in an algebraic equation in $s$, which can be solved for $Y(s)$. The inverse Laplace transform then gives $y(x)$.
+
+
+```python
+# Solve L_deq for Y(s)
+
+Y, a, b = var("Y, a, b")
+
+substitutions = {
+    laplace(y, x, s): Y,
+    y(x=0): a,
+    diff(y, x).subs(x==0): b
+}
+
+L_algebraic = L_deq.subs(substitutions)
+
+print(L_algebraic)
+```
+
+```python
+algebraic_solutions = solve(L_algebraic, Y, solution_dict=True)
+print(algebraic_solutions)
+```
+
+```python
+y_t = inverse_laplace(algebraic_solutions[0][Y], s, x)
+print(y_t)
+```
+
+```python
+L(y_t, x) - sin(x)
+```
+
 
 ## Conclusion
 SageMath provides a robust set of tools for computing Laplace transforms and their inverses. It can also be used to solve differential equations using the Laplace transform method. This makes it a valuable tool for engineers, mathematicians, and physicists.
