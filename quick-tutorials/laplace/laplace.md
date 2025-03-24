@@ -13,7 +13,7 @@ SageMath provides built-in functionality to compute the Laplace transform of a f
 ### Example 1: Basic Laplace Transform
 Let's compute the Laplace transform of $f(t) = e^{at}$:
 ```python
-var('t s a')
+t,s,a = var('t s a')
 f = exp(a*t)
 L = laplace(f, t, s)
 print(L)
@@ -26,7 +26,7 @@ $$
 ### Example 2: Laplace Transform of Trigonometric Functions
 Let's compute the Laplace transform of $f(t) = \sin(bt)$:
 ```python
-var('t s b')
+t, s, b = var('t s b')
 f = sin(b*t)
 L = laplace(f, t, s)
 print(L)
@@ -63,7 +63,7 @@ SageMath also allows us to compute inverse Laplace transforms. For example:
 ### Example 4: Inverse Laplace Transform
 Find the inverse Laplace transform of $F(s) = \frac{1}{s^2 + 1}$:
 ```python
-var('s t')
+s, t = var('s t')
 F = 1/(s^2 + 1)
 f_t = inverse_laplace(F, s, t)
 print(f_t)
@@ -100,8 +100,8 @@ Y, a, b = var("Y, a, b")
 
 substitutions = {
     laplace(y, x, s): Y,
-    y(x=0): a,
-    diff(y, x).subs(x==0): b
+    y(x=0): 1,
+    diff(y, x).subs(x==0): -1
 }
 
 L_algebraic = L_deq.subs(substitutions)
@@ -115,15 +115,27 @@ print(algebraic_solutions)
 ```
 
 ```python
-y_t = inverse_laplace(algebraic_solutions[0][Y], s, x)
-print(y_t)
+y_x = inverse_laplace(algebraic_solutions[0][Y], s, x)
+print(y_x)
 ```
 
 ```python
-L(y_t, x) - sin(x)
+L(y_x, x)
 ```
 
+```python
+y_x(x = 0)
+```
 
-## Conclusion
-SageMath provides a robust set of tools for computing Laplace transforms and their inverses. It can also be used to solve differential equations using the Laplace transform method. This makes it a valuable tool for engineers, mathematicians, and physicists.
+```python
+diff(y_x, x).subs(x=0)
+```
 
+```python
+F = algebraic_solutions[0][Y]
+F.partial_fraction_decomposition()
+```
+
+```python
+
+```
